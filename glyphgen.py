@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 # Note - this implementation uses PILLOW rather than PIL.
 
 from PIL import Image
