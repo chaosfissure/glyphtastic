@@ -22,12 +22,15 @@ def BlockErase(left, right, top, bottom, pixels):
 # ------------------------------------------------------------------------
 # Create our actual glyph shapes.	
 # ------------------------------------------------------------------------
-def Glyph(seed, square, blockoffset, width, height, forcemode, exclusive):
+def Glyph(seed, square, blockoffset, width, height, forcemode, exclusive, fixed):
 	
 	# For repeatability on any given input set.  This can be removed
 	# if you're not concerned with this, replaced with something like
-	# int (time()*10000.0)
-	random.seed(seed)
+	
+	if not fixed:
+		random.seed(time()*10000.0)
+	else:
+		random.seed(seed)
 	
 	# ------------------------------------------------------------------------
 	# Higher ratio of vertical lines to horizontal lines.
@@ -127,6 +130,11 @@ if __name__ == '__main__':
 	
 	# Only allow down OR left+right generation?  This is a probabillity.
 	exclusive=0.5
+	
+	# Use a fixed seed based on position of generated image? (true)
+	# Or use a seed based on the time it is generated? (false)
+	
+	fixed = False
 
 	for arg in [x.lower() for x in argv[1:]]:
 		if   'vglyphs='   in arg: vglyphs   = int(arg.replace('vglyphs=', ''))
@@ -136,6 +144,7 @@ if __name__ == '__main__':
 		elif 'blocksize=' in arg: blocksize = int(arg.replace('blocksize=', ''))
 		elif 'mode='      in arg: forcemode = int(arg.replace('mode=', ''))
 		elif 'exclusive=' in arg: exclusive = float(arg.replace('exclusive=', ''))
+		elif 'fixed='     in arg: fixed     = int(arg.replace('fixed=', '')) != 0
 		
 	blockOffset = blocksize / 4
 	w = (blocksize + blockOffset) * (vblocks+2)
@@ -149,7 +158,7 @@ if __name__ == '__main__':
 		for y in xrange(vglyphs):
 			modeforce = y%3 if forcemode == -1 else forcemode
 			
-			tile = Glyph(counter, blocksize, blockOffset, vblocks, hblocks, modeforce, exclusive).load()
+			tile = Glyph(counter, blocksize, blockOffset, vblocks, hblocks, modeforce, exclusive, fixed).load()
 			counter += 1
 		
 			xmin = x*w
